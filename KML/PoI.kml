@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://earth.google.com/kml/2.0">
+  <Document>
+    <name>PoI.kml</name>
+    <open>1</open>
+    <Folder>
+      <Placemark>
+        <name>Base</name>
+        <description>Base</description>
+        <Style id="star_style">
+          <IconStyle>
+            <color>ff00aaff</color>
+            <scale>1.4</scale>
+            <Icon>
+              <href>http://maps.google.com/mapfiles/kml/shapes/star.png</href>
+            </Icon>
+          </IconStyle>
+        </Style>
+        <Point>
+          <coordinates>-89.72823955629826,13.7213687764169,0</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>Comunidad A</name>
+        <description>Comunidad A</description>
+        <Style id="target_style">
+          <IconStyle>
+            <scale>1.4</scale>
+            <color>ffff00ff</color>
+            <Icon>
+              <href>http://maps.google.com/mapfiles/kml/shapes/target.png</href>
+            </Icon>
+          </IconStyle>
+        </Style>
+        <Point>
+          <coordinates>-89.72251624633574,13.72411966114335,0</coordinates>
+        </Point>
+    </Placemark>
+    </Folder>
+  </Document>
+</kml>

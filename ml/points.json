@@ -1,0 +1,41 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-89.72823955629826, 13.7213687764169]
+      },
+      "properties": {
+        "id": 6676554456,
+        "name": "Base",
+        "level": 0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-89.72251624633574,13.72411966114335]
+      },
+      "properties": {
+        "id": 2212399201,
+        "name": "El Encuentro",
+        "level": 1
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-89.73,13.75]
+      },
+      "properties": {
+        "id": 3200039009,
+        "name": "Las quebradas",
+        "level": 3
+      }
+    }
+  ]
+}

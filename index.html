@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <title>Reaccion.net :: Visualizador de redes</title>
+        <script type="text/javascript" src="/js/jquery-ui/jquery-1.10.2.js"></script>
+        <script type="text/javascript" src="/js/jquery-ui/ui/jquery-ui.js"></script>
+        <script type="text/javascript" src="/js/bootstrap.js"></script>
+        <script src="http://maps.google.com/maps/api/js?v=3&amp;sensor=false"></script>
+        <script src="./lib/OpenLayers.js"></script>
+        <link rel="stylesheet" href="./theme/default/style.css" type="text/css">
+        <link rel="stylesheet" href="style.css" type="text/css">
+        <style type="text/css">
+            html, body, #map {
+                margin: 0;
+                width: 100%;
+                height: 100%;
+            }
+
+            #text {
+                position: absolute;
+                bottom: 1em;
+                left: 1em;
+                width: 512px;
+                z-index: 20000;
+                background-color: white;
+                padding: 0 0.5em 0.5em 0.5em;
+            }
+            #logo {
+                position: absolute;
+                right: 10px;
+                bottom: 10px;
+                z-index: 1000;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="map">
+          <div id="logo">
+            <img src="./images/Logo-RAC.png" />
+          </div>
+        </div>
+          <div id="text">
+              <h1 id="title">¡Bienvenido a la Red de Acción Comunitaria!</h1>
+              <div id="docs">
+                  <p>Bienvenido al visualizador de las redes de acción
+                  comunitarias. Utilice esta interfaz para monitorear el 
+                  estado de las comunidades y acceder a los planes de Preparación
+                  y Respuesta de Emergencia Comunales.</p>
+              </div>
+            <script>
+$(function() {
+  init();
+});
+
+var map;
+
+
+
+function init() {
+    //Add a selector control to the vectorLayer with popup functions
+    
+    
+    var MyStyleMap = new OpenLayers.StyleMap(
+      {
+        pointRadius: 10,
+        strokeColor: '#000000'
+      }
+    );
+    
+    var lvlLookup = {
+      0: { fillColor: "#ffffff"},
+      1: { fillColor: "#00ff00"},
+      2: { fillColor: "#ffff00"},
+      3: { fillColor: "#ff0000"}
+    };
+    
+    MyStyleMap.addUniqueValueRules("default", "level", lvlLookup);
+    
+    function levelColor(level) {
+      if(level == 1) {
+        return "VERDE";
+      }
+      if(level == 2) {
+        return "AMARILLO";
+      }
+      if(level == 3) {
+        return "ROJO";
+      }
+      return "BLANCO"
+    }
+    
+    var reaccion_layer; 
+    function createPopup(feature) {
+      feature.popup = new OpenLayers.Popup.FramedCloud("pop",
+          feature.geometry.getBounds().getCenterLonLat(),
+          null,
+          '<div class="markerContent"><strong>'+feature.attributes.name+'</strong><br />'+
+          '<strong>Estado: </strong>'+levelColor(feature.attributes.level)+'<br />'+
+          '<strong>Salud del transmisor:</strong>'+' EN-LINEA / Batería 75% / Est 12h '+'<br />'+
+          '<a href="#">Mostrar riesgos y amenazas.</a> [Mapa]<br />'+
+          '<a href="#">Mostrar estadísticas de población.</a> [Mapa]<br />'+
+          '<a href="#">Mostrar infraestructura crítica.</a> [Mapa]<br />'+
+          '<a href="#">Mostrar rutas de escape y puntos de reunión.</a> [Mapa]<br />'+
+          '<a href="#">Mostrar plan comunitario.</a> [Nueva ventana]<br />'+
+          '<a href="#">&lt;&lt;Observar&gt;&gt;</a><br />'+
+          '</div>',
+          null,
+          true,
+          function() { controls['selector'].unselectAll(); }
+      );
+      //feature.popup.closeOnMove = true;
+      map.addPopup(feature.popup);
+    }
+
+    function destroyPopup(feature) {
+      feature.popup.destroy();
+      feature.popup = null;
+    }
+    var epsg4326 = new OpenLayers.Projection('EPSG:4326');
+    map = new OpenLayers.Map('map', {
+        projection: 'EPSG:3857',
+        layers: [
+            new OpenLayers.Layer.Google(
+                "Google Physical",
+                {type: google.maps.MapTypeId.TERRAIN}
+            ),
+            new OpenLayers.Layer.Google(
+                "Google Streets", // the default
+                {numZoomLevels: 20}
+            ),
+            new OpenLayers.Layer.Google(
+                "Google Hybrid",
+                {type: google.maps.MapTypeId.HYBRID, numZoomLevels: 20}
+            ),
+            new OpenLayers.Layer.Google(
+                "Google Satellite",
+                {type: google.maps.MapTypeId.SATELLITE, numZoomLevels: 22}
+            ),
+            reaccion_layer = new OpenLayers.Layer.Vector("KIT Reacción", {
+            projection: epsg4326,
+            strategies: [new OpenLayers.Strategy.Fixed()],
+            protocol: new OpenLayers.Protocol.HTTP({
+                url: "ml/points.json",
+                format: new OpenLayers.Format.GeoJSON()
+            }),
+            styleMap: MyStyleMap
+            })
+        ],
+        center: new OpenLayers.LonLat(-89.72, 13.72)
+            // Google.v3 uses web mercator as projection, so we have to
+            // transform our coordinates
+            .transform('EPSG:4326', 'EPSG:3857'),
+        zoom: 15
+    });
+    map.addControl(new OpenLayers.Control.LayerSwitcher());
+    
+    var controls = {
+      selector: new OpenLayers.Control.SelectFeature(reaccion_layer, { onSelect: createPopup, onUnselect: destroyPopup })
+    };
+    
+    map.addControl(controls['selector']);
+    controls['selector'].activate();
+}
+            </script>
+        </div>
+    </body>
+</html>
